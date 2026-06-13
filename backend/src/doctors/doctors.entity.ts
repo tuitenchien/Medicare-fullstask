@@ -22,7 +22,7 @@ export class Doctor {
   @Column({ nullable: true })
   phone!: string;
 
-  @OneToOne(() => User, { onDelete: 'CASCADE' })
+  @OneToOne(() => User)
   @JoinColumn()
   user!: User;
 }

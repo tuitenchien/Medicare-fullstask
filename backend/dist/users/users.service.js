@@ -17,16 +17,30 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const users_entity_1 = require("./users.entity");
+const appointment_entity_1 = require("../appointment/appointment.entity");
+const doctors_entity_1 = require("../doctors/doctors.entity");
 let UsersService = class UsersService {
     userRepo;
-    constructor(userRepo) {
+    doctorRepo;
+    appointmentRepo;
+    constructor(userRepo, doctorRepo, appointmentRepo) {
         this.userRepo = userRepo;
+        this.doctorRepo = doctorRepo;
+        this.appointmentRepo = appointmentRepo;
     }
     create(user) {
         return this.userRepo.save(user);
     }
-    findByCccd(cccd) {
-        return this.userRepo.findOne({
+    async findByCccdForLogin(cccd) {
+        return await this.userRepo
+            .createQueryBuilder('user')
+            .addSelect('user.password')
+            .where('user.cccd = :cccd', { cccd })
+            .getOne();
+    }
+    ;
+    async findByCccd(cccd) {
+        return await this.userRepo.findOne({
             where: { cccd },
         });
     }
@@ -42,18 +56,36 @@ let UsersService = class UsersService {
         }
         return user;
     }
-    async remove(id) {
-        const user = await this.findById(id);
-        if (!user) {
-            throw new common_1.NotFoundException('User not found');
+    async removeDoctor(doctorId) {
+        const doctor = await this.doctorRepo.findOne({
+            where: { id: doctorId },
+            relations: { user: true },
+        });
+        if (!doctor) {
+            throw new common_1.NotFoundException('Doctor not found');
         }
-        return await this.userRepo.remove(user);
+        const count = await this.appointmentRepo.count({
+            where: {
+                doctor: { id: doctorId },
+            },
+        });
+        if (count > 0) {
+            throw new common_1.BadRequestException(`Không thể xóa bác sĩ vì còn ${count} lịch hẹn`);
+        }
+        await this.doctorRepo.remove(doctor);
+        return {
+            message: 'Đã xóa bác sĩ thành công',
+        };
     }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(users_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(doctors_entity_1.Doctor)),
+    __param(2, (0, typeorm_1.InjectRepository)(appointment_entity_1.Appointment)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

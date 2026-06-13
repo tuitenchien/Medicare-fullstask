@@ -34,7 +34,7 @@ let UsersController = class UsersController {
         return this.usersService.findByCccd(cccd);
     }
     remove(id) {
-        return this.usersService.remove(id);
+        return this.usersService.removeDoctor(id);
     }
 };
 exports.UsersController = UsersController;
@@ -45,21 +45,21 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
+    (0, common_1.Get)('filter/:id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "findById", null);
 __decorate([
-    (0, common_1.Get)('cccd/:cccd'),
-    __param(0, (0, common_1.Param)('cccd')),
+    (0, common_1.Get)('search'),
+    __param(0, (0, common_1.Query)('cccd')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "findByCccd", null);
 __decorate([
-    (0, common_1.Delete)('delete/:id'),
+    (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -71,4 +71,4 @@ exports.UsersController = UsersController = __decorate([
     (0, roles_decorator_1.Roles)(role_enum_1.Role.ADMIN),
     __metadata("design:paramtypes", [users_service_1.UsersService])
 ], UsersController);
-//# sourceMappingURL=userscontroller.js.map
+//# sourceMappingURL=users.controller.js.map

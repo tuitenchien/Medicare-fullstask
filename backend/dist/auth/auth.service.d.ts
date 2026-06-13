@@ -2,6 +2,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { UsersService } from '../users/users.service';
 import { PatientsService } from '../patients/patients.service';
+import { LoginDto } from './dto/login.dto';
 export declare class AuthService {
     private usersService;
     private patientsService;
@@ -10,7 +11,7 @@ export declare class AuthService {
     register(dto: RegisterDto): Promise<{
         message: string;
     }>;
-    login(dto: any): Promise<{
+    login(dto: LoginDto): Promise<{
         message: string;
         access_token: string;
         user: {

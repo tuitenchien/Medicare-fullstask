@@ -5,5 +5,7 @@ export declare class UsersController {
     findAll(): Promise<import("./users.entity").User[]>;
     findById(id: number): Promise<import("./users.entity").User>;
     findByCccd(cccd: string): Promise<import("./users.entity").User | null>;
-    remove(id: number): Promise<import("./users.entity").User>;
+    remove(id: number): Promise<{
+        message: string;
+    }>;
 }

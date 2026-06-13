@@ -5,5 +5,5 @@ export declare class PatientsController {
     getProfile(req: any): Promise<import("./patients.entity").Patient>;
     updateProfile(req: any, body: any): Promise<import("./patients.entity").Patient>;
     findAll(): Promise<import("./patients.entity").Patient[]>;
-    findOne(id: string): Promise<import("./patients.entity").Patient>;
+    findByUserId(id: string): Promise<import("./patients.entity").Patient>;
 }

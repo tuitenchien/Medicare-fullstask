@@ -16,31 +16,23 @@ import { Role } from '../common/enums/role.enum';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.ADMIN) // 🔥 chỉ admin
+@Roles(Role.ADMIN)
 export class UsersController {
     constructor(private usersService: UsersService) { }
-
-    // 📋 GET ALL USERS
     @Get()
     findAll() {
         return this.usersService.findAll();
     }
-
-    // 🔍 GET USER BY ID
-    @Get(':id')
+    @Get('filter/:id')
     findById(@Param('id', ParseIntPipe) id: number) {
         return this.usersService.findById(id);
     }
-
-    // 🔍 FIND BY CCCD (query ?cccd=xxx)
-    @Get('cccd/:cccd')
-    findByCccd(@Param('cccd') cccd: string) {
+    @Get('search')
+    findByCccd(@Query('cccd') cccd: string) {
         return this.usersService.findByCccd(cccd);
     }
-
-    // ❌ DELETE USER (CASCADE patient/doctor)
-    @Delete('delete/:id')
+    @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
-        return this.usersService.remove(id);
+        return this.usersService.removeDoctor(id);
     }
 }

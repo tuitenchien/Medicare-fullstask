@@ -37,7 +37,7 @@ __decorate([
     __metadata("design:type", String)
 ], Doctor.prototype, "phone", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => users_entity_1.User, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.OneToOne)(() => users_entity_1.User),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", users_entity_1.User)
 ], Doctor.prototype, "user", void 0);

@@ -24,7 +24,7 @@ export class PatientsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('profile')
+  @Patch('update-profile')
   updateProfile(@Req() req, @Body() body) {
     return this.patientsService.update(req.user.sub, body);
   }
@@ -39,7 +39,7 @@ export class PatientsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findByUserId(@Param('id') id: string) {
     return this.patientsService.findOne(Number(id));
   }
 }

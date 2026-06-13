@@ -5,6 +5,7 @@ import { RegisterDto } from './dto/register.dto';
 import { UsersService } from '../users/users.service';
 import { PatientsService } from '../patients/patients.service'; // 🔥 thêm
 import { Role } from '../common/enums/role.enum';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,7 @@ export class AuthService {
     private usersService: UsersService,
     private patientsService: PatientsService, // 🔥 thêm
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   // 🔥 REGISTER
   async register(dto: RegisterDto) {
@@ -62,34 +63,35 @@ export class AuthService {
   }
 
   // 🔑 LOGIN
-  async login(dto: any) {
-    const user = await this.usersService.findByCccd(dto.cccd);
+  async login(dto: LoginDto) {
+  const user = await this.usersService.findByCccdForLogin(dto.cccd);
 
-    if (!user) {
-      throw new BadRequestException('Không tìm thấy người dùng');
-    }
+  if (!user) {
+    throw new BadRequestException('Không tìm thấy người dùng');
+  }
 
-    const isMatch = await bcrypt.compare(dto.password, user.password);
+  if (!dto.password || !user.password) {
+    throw new BadRequestException('Thiếu dữ liệu đăng nhập');
+  }
 
-    if (!isMatch) {
-      throw new BadRequestException('Sai mật khẩu hoặc tài khoản');
-    }
+  const isMatch = await bcrypt.compare(dto.password, user.password);
 
-    // 🔥 payload chuẩn
-    const payload = {
+  if (!isMatch) {
+    throw new BadRequestException('Sai mật khẩu hoặc tài khoản');
+  }
+
+  return {
+    message: 'Đăng nhập thành công',
+    access_token: this.jwtService.sign({
       sub: user.id,
       cccd: user.cccd,
       role: user.role,
-    };
-
-    return {
-      message: 'Đăng nhập thành công',
-      access_token: this.jwtService.sign(payload),
-      user: {
-        id: user.id,
-        cccd: user.cccd,
-        role: user.role,
-      },
-    };
-  }
+    }),
+    user: {
+      id: user.id,
+      cccd: user.cccd,
+      role: user.role,
+    },
+  };
+}
 }

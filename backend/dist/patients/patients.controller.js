@@ -32,7 +32,7 @@ let PatientsController = class PatientsController {
     findAll() {
         return this.patientsService.findAll();
     }
-    findOne(id) {
+    findByUserId(id) {
         return this.patientsService.findOne(Number(id));
     }
 };
@@ -47,7 +47,7 @@ __decorate([
 ], PatientsController.prototype, "getProfile", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Patch)('profile'),
+    (0, common_1.Patch)('update-profile'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -70,7 +70,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], PatientsController.prototype, "findOne", null);
+], PatientsController.prototype, "findByUserId", null);
 exports.PatientsController = PatientsController = __decorate([
     (0, common_1.Controller)('patients'),
     __metadata("design:paramtypes", [patients_service_1.PatientsService])

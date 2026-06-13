@@ -8,7 +8,7 @@ export class User {
   @Column({ unique: true })
   cccd!: string;
 
-  @Column()
+  @Column({ select: false })
   password!: string;
 
   @Column({ default: 'patient' })

@@ -85,22 +85,24 @@ let AuthService = class AuthService {
         };
     }
     async login(dto) {
-        const user = await this.usersService.findByCccd(dto.cccd);
+        const user = await this.usersService.findByCccdForLogin(dto.cccd);
         if (!user) {
             throw new common_1.BadRequestException('Không tìm thấy người dùng');
+        }
+        if (!dto.password || !user.password) {
+            throw new common_1.BadRequestException('Thiếu dữ liệu đăng nhập');
         }
         const isMatch = await bcrypt.compare(dto.password, user.password);
         if (!isMatch) {
             throw new common_1.BadRequestException('Sai mật khẩu hoặc tài khoản');
         }
-        const payload = {
-            sub: user.id,
-            cccd: user.cccd,
-            role: user.role,
-        };
         return {
             message: 'Đăng nhập thành công',
-            access_token: this.jwtService.sign(payload),
+            access_token: this.jwtService.sign({
+                sub: user.id,
+                cccd: user.cccd,
+                role: user.role,
+            }),
             user: {
                 id: user.id,
                 cccd: user.cccd,

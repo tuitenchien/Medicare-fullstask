@@ -5,6 +5,17 @@ export declare class AppointmentsController {
     create(req: any, body: any): Promise<import("./appointment.entity").Appointment>;
     getMy(req: any): Promise<import("./appointment.entity").Appointment[]>;
     getDoctor(req: any): Promise<import("./appointment.entity").Appointment[]>;
-    confirm(id: string): Promise<import("./appointment.entity").Appointment>;
-    findAllForAdmin(req: any): Promise<import("./appointment.entity").Appointment[]>;
+    confirm(id: string, req: any): Promise<import("./appointment.entity").Appointment>;
+    reject(id: string, req: any): Promise<import("./appointment.entity").Appointment>;
+    cancel(id: number, req: any): Promise<import("./appointment.entity").Appointment>;
+    complete(id: string, req: any): Promise<import("./appointment.entity").Appointment>;
+    findAllForAdmin(req: any): Promise<{
+        id: number;
+        patientId: number;
+        patientName: string;
+        doctorId: number;
+        doctorName: string;
+        appointmentDate: Date;
+        status: import("../common/enums/appointment").AppointmentStatus;
+    }[]>;
 }

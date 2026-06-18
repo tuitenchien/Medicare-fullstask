@@ -33,11 +33,21 @@ let AppointmentsController = class AppointmentsController {
     getDoctor(req) {
         return this.service.findByDoctor(req.user.sub);
     }
-    confirm(id) {
-        return this.service.confirm(Number(id));
+    confirm(id, req) {
+        return this.service.confirm(Number(id), req.user.sub);
+    }
+    reject(id, req) {
+        return this.service.reject(Number(id), req.user.sub);
+    }
+    cancel(id, req) {
+        const userId = req.user.sub;
+        return this.service.cancel(id, userId);
+    }
+    complete(id, req) {
+        return this.service.complete(Number(id), req.user.sub);
     }
     findAllForAdmin(req) {
-        return this.service.findByDoctor(req.user.sub);
+        return this.service.findAll();
     }
 };
 exports.AppointmentsController = AppointmentsController;
@@ -68,12 +78,39 @@ __decorate([
 ], AppointmentsController.prototype, "getDoctor", null);
 __decorate([
     (0, common_1.Post)(':id/confirm'),
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.DOCTOR),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], AppointmentsController.prototype, "confirm", null);
+__decorate([
+    (0, common_1.Post)(':id/reject'),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.DOCTOR),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], AppointmentsController.prototype, "reject", null);
+__decorate([
+    (0, common_1.Post)(':id/cancel'),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.PATIENT),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], AppointmentsController.prototype, "cancel", null);
+__decorate([
+    (0, common_1.Post)(':id/complete'),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.DOCTOR),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], AppointmentsController.prototype, "complete", null);
 __decorate([
     (0, common_1.Get)('admin'),
     (0, roles_decorator_1.Roles)(role_enum_1.Role.ADMIN),

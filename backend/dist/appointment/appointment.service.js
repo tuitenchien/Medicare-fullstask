@@ -33,17 +33,51 @@ let AppointmentsService = class AppointmentsService {
         const patient = await this.patientRepo.findOne({
             where: { user: { id: userId } },
         });
+        if (!patient)
+            throw new common_1.NotFoundException('Patient not found');
         const doctor = await this.doctorRepo.findOne({
             where: { id: doctorId },
         });
-        if (!patient)
-            throw new common_1.NotFoundException('Patient not found');
         if (!doctor)
             throw new common_1.NotFoundException('Doctor not found');
+        const appointmentDate = new Date(date);
+        if (isNaN(appointmentDate.getTime())) {
+            throw new common_1.BadRequestException('Invalid date format');
+        }
+        if (appointmentDate < new Date()) {
+            throw new common_1.BadRequestException('Appointment time must be in the future');
+        }
+        const conflictDoctor = await this.appointmentRepo.findOne({
+            where: {
+                doctor: { id: doctorId },
+                appointmentDate: date,
+                status: (0, typeorm_2.In)([
+                    appointment_1.AppointmentStatus.PENDING,
+                    appointment_1.AppointmentStatus.CONFIRMED,
+                ]),
+            },
+        });
+        if (conflictDoctor) {
+            throw new common_1.BadRequestException('Doctor already booked');
+        }
+        const conflictPatient = await this.appointmentRepo.findOne({
+            where: {
+                patient: { id: patient.id },
+                appointmentDate: date,
+                status: (0, typeorm_2.In)([
+                    appointment_1.AppointmentStatus.PENDING,
+                    appointment_1.AppointmentStatus.CONFIRMED,
+                ]),
+            },
+        });
+        if (conflictPatient) {
+            throw new common_1.BadRequestException('You already have an appointment at this time');
+        }
         const appointment = this.appointmentRepo.create({
             patient,
             doctor,
             appointmentDate: date,
+            status: appointment_1.AppointmentStatus.PENDING,
         });
         return this.appointmentRepo.save(appointment);
     }
@@ -63,22 +97,88 @@ let AppointmentsService = class AppointmentsService {
             relations: { patient: true },
         });
     }
-    async confirm(id) {
+    async confirm(id, userId) {
         const appt = await this.appointmentRepo.findOne({
             where: { id },
+            relations: { doctor: { user: true } },
         });
         if (!appt)
             throw new common_1.NotFoundException('Appointment not found');
+        if (appt.doctor.user.id !== userId) {
+            throw new common_1.BadRequestException('No permission');
+        }
+        if (appt.status !== appointment_1.AppointmentStatus.PENDING) {
+            throw new common_1.BadRequestException('Only pending appointments can be confirmed');
+        }
         appt.status = appointment_1.AppointmentStatus.CONFIRMED;
         return this.appointmentRepo.save(appt);
     }
+    async reject(id, userId) {
+        const appt = await this.appointmentRepo.findOne({
+            where: { id },
+            relations: { doctor: { user: true } },
+        });
+        if (!appt)
+            throw new common_1.NotFoundException('Appointment not found');
+        if (appt.doctor.user.id !== userId) {
+            throw new common_1.BadRequestException('No permission');
+        }
+        if (appt.status !== appointment_1.AppointmentStatus.PENDING) {
+            throw new common_1.BadRequestException('Only pending can reject');
+        }
+        appt.status = appointment_1.AppointmentStatus.REJECTED;
+        return this.appointmentRepo.save(appt);
+    }
+    async cancel(id, userId) {
+        const appt = await this.appointmentRepo.findOne({
+            where: { id },
+            relations: { patient: { user: true }, doctor: { user: true } },
+        });
+        if (!appt)
+            throw new common_1.NotFoundException('Appointment not found');
+        if (appt.patient.user.id !== userId &&
+            appt.doctor.user.id !== userId) {
+            throw new common_1.BadRequestException('No permission to cancel');
+        }
+        if (appt.status !== appointment_1.AppointmentStatus.PENDING &&
+            appt.status !== appointment_1.AppointmentStatus.CONFIRMED) {
+            throw new common_1.BadRequestException('Cannot cancel this appointment');
+        }
+        appt.status = appointment_1.AppointmentStatus.CANCELLED;
+        return this.appointmentRepo.save(appt);
+    }
+    async complete(id, userId) {
+        const appt = await this.appointmentRepo.findOne({
+            where: { id },
+            relations: { doctor: { user: true } },
+        });
+        if (!appt)
+            throw new common_1.NotFoundException('Appointment not found');
+        if (appt.doctor.user.id !== userId) {
+            throw new common_1.BadRequestException('No permission');
+        }
+        if (appt.status !== appointment_1.AppointmentStatus.CONFIRMED) {
+            throw new common_1.BadRequestException('Only confirmed appointments can be completed');
+        }
+        appt.status = appointment_1.AppointmentStatus.COMPLETED;
+        return this.appointmentRepo.save(appt);
+    }
     async findAll() {
-        return this.appointmentRepo.find({
+        const data = await this.appointmentRepo.find({
             relations: {
                 patient: true,
                 doctor: true,
-            }
+            },
         });
+        return data.map(a => ({
+            id: a.id,
+            patientId: a.patient.id,
+            patientName: a.patient.fullName,
+            doctorId: a.doctor.id,
+            doctorName: a.doctor.fullName,
+            appointmentDate: a.appointmentDate,
+            status: a.status,
+        }));
     }
 };
 exports.AppointmentsService = AppointmentsService;

@@ -7,5 +7,6 @@ var AppointmentStatus;
     AppointmentStatus["CONFIRMED"] = "CONFIRMED";
     AppointmentStatus["COMPLETED"] = "COMPLETED";
     AppointmentStatus["CANCELLED"] = "CANCELLED";
+    AppointmentStatus["REJECTED"] = "REJECTED";
 })(AppointmentStatus || (exports.AppointmentStatus = AppointmentStatus = {}));
 //# sourceMappingURL=appointment.js.map

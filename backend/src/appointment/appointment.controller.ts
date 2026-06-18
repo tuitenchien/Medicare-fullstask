@@ -6,6 +6,8 @@ import {
   Param,
   UseGuards,
   Request,
+  ParseIntPipe,
+  Req,
 } from '@nestjs/common';
 
 import { AppointmentsService } from './appointment.service';
@@ -19,9 +21,9 @@ import { Role } from '../common/enums/role.enum';
 export class AppointmentsController {
   constructor(private service: AppointmentsService) { }
 
-  // 👤 patient đặt lịch
   @Post()
   @Roles(Role.PATIENT)
+
   create(@Request() req, @Body() body) {
     return this.service.create(
       req.user.sub,
@@ -29,7 +31,6 @@ export class AppointmentsController {
       body.appointmentDate,
     );
   }
-
   // 👤 xem lịch của mình
   @Get('my')
   @Roles(Role.PATIENT)
@@ -46,14 +47,32 @@ export class AppointmentsController {
 
   // ✔ xác nhận lịch
   @Post(':id/confirm')
+  confirm(@Param('id') id: string, @Request() req) {
+    return this.service.confirm(Number(id), req.user.sub);
+  }
+  @Post(':id/reject')
   @Roles(Role.DOCTOR)
-  confirm(@Param('id') id: string) {
-    return this.service.confirm(Number(id));
+  reject(@Param('id') id: string, @Request() req) {
+    return this.service.reject(Number(id), req.user.sub);
+  }
+  @Post(':id/cancel')
+  @Roles(Role.PATIENT)
+  cancel(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req
+  ) {
+    const userId = req.user.sub;
+    return this.service.cancel(id, userId);
+  }
+  @Post(':id/complete')
+  @Roles(Role.DOCTOR)
+  complete(@Param('id') id: string, @Request() req) {
+    return this.service.complete(Number(id), req.user.sub);
   }
   @Get('admin')
   @Roles(Role.ADMIN)
   findAllForAdmin(@Request() req) {
-    return this.service.findByDoctor(req.user.sub);
+    return this.service.findAll();
   }
-  
+
 }

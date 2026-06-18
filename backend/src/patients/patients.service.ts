@@ -50,7 +50,7 @@ export class PatientsService {
         });
     }
 
-    //Lấy 1 bệnh nhân theo id
+    //Lấy 1 bệnh nhân theo id   
     async findOne(id: number) {
         const patient = await this.patientRepository.findOne({
             where: { id },

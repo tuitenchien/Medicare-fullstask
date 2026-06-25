@@ -23,7 +23,6 @@ export class AppointmentsController {
 
   @Post()
   @Roles(Role.PATIENT)
-
   create(@Request() req, @Body() body) {
     return this.service.create(
       req.user.sub,
@@ -31,21 +30,18 @@ export class AppointmentsController {
       body.appointmentDate,
     );
   }
-  // 👤 xem lịch của mình
   @Get('my')
   @Roles(Role.PATIENT)
   getMy(@Request() req) {
     return this.service.findByPatient(req.user.sub);
   }
 
-  // 👨‍⚕️ bác sĩ xem lịch
   @Get('doctor')
   @Roles(Role.DOCTOR)
   getDoctor(@Request() req) {
     return this.service.findByDoctor(req.user.sub);
   }
 
-  // ✔ xác nhận lịch
   @Post(':id/confirm')
   confirm(@Param('id') id: string, @Request() req) {
     return this.service.confirm(Number(id), req.user.sub);

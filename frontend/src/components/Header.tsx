@@ -4,7 +4,7 @@ export default function Header() {
     <nav className="mt-6 font-[Roboto] px-2">
       <div className="max-w-6xl mx-auto flex items-center gap-2 justify-between">
         <div className="flex items-center gap-2" >
-          <a href="#"><span className="material-symbols-outlined bg-[#0f9cdb] text-white p-2 rounded-lg">
+          <a href="#"><span className="material-symbols-outlined bg-[#0f9cdb] text-white p-2 rounded-xl">
             favorite
           </span></a>
           <div>

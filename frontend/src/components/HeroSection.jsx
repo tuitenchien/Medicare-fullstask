@@ -14,7 +14,6 @@ export default function HeroSection() {
                             <span className="material-symbols-outlined text-gray-400 px-3">
                                 search
                             </span>
-
                             <input
                                 type="text"
                                 placeholder="Tìm bác sĩ, chuyên khoa..."
@@ -25,7 +24,7 @@ export default function HeroSection() {
                                 Tìm kiếm
                             </button>
                         </div>
-                        <div className="flex flex-wrap gap-4   rounded-2xl ">
+                        <div className="flex flex-wrap gap-4 rounded-2xl ">
                             <select className="outline-none px-4 py-3 border border-gray-200 rounded-xl min-w-[180px]">
                                 <option>Chuyên khoa</option>
                             </select>
@@ -44,7 +43,16 @@ export default function HeroSection() {
                                     expand_circle_right
                                 </span>
                             </button>
-
+                        </div>
+                        <div className="mt-2 space-y-2">
+                            <div className="flex items-center gap-2">
+                                <img src="src/assets/hot-deal.png" className="size-5" />
+                                <span>12.000+ lượt đặt lịch trong 24h qua</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <img src="src/assets/user.png" className="size-5" />
+                                <span>4.9/5.0 từ 1000+ bệnh nhân</span>
+                            </div>
                         </div>
                     </div>
                     <div>
@@ -52,6 +60,6 @@ export default function HeroSection() {
                     </div>
                 </div>
             </div>
-        </section>
+        </section >
     )
 }
